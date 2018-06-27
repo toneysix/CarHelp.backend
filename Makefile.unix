@@ -12,10 +12,10 @@ LD = g++
 WINDRES = 
 
 INC = -Ihead -Ivendor/boost_1_67_0
-CFLAGS = -Wall -std=c++14 -fexceptions -fpermissive -D_WIN32_WINNT=0x0501 -DWINVER=0x0501 -D_WIN32_WINDOWS
+CFLAGS = -Wall -std=c++14 -fexceptions -fpermissive
 RESINC = 
 LIBDIR = -Lvendor/boost_1_67_0/libs
-LIB = -lwsock32 vendor/boost_1_67_0/bin.v2/libs/system/build/gcc-5.1.0/release/link-static/threading-multi/libboost_system-mgw51-mt-x32-1_67.a vendor/boost_1_67_0/bin.v2/libs/thread/build/gcc-5.1.0/release/link-static/threadapi-win32/threading-multi/libboost_thread-mgw51-mt-x32-1_67.a vendor/boost_1_67_0/bin.v2/libs/regex/build/gcc-5.1.0/release/link-static/threading-multi/libboost_regex-mgw51-mt-x32-1_67.a -llibws2_32
+LIB = -lwsock32 -lboost_system -lboost_thread -lboost_regex -lbws2_32
 LDFLAGS = 
 
 INC_DEBUG = $(INC)
