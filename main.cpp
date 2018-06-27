@@ -5,8 +5,8 @@ using namespace std;
 
 int main()
 {
-    SetConsoleCP (1251);
-    SetConsoleOutputCP(1251);
+//    SetConsoleCP (1251);
+//    SetConsoleOutputCP(1251);
 
 	try
 	{
@@ -31,7 +31,7 @@ int main()
         std::cout << "Waiting for incoming connections \n";
         while( true )
         {
-          Sleep( 400 );
+  //        Sleep( 400 );
         }
 	}
 	catch( std::exception& e )
