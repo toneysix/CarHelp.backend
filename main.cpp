@@ -6,6 +6,7 @@ using namespace std;
 
 int main()
 {
+    if( )
 //    SetConsoleCP (1251);
 //    SetConsoleOutputCP(1251);
 
@@ -27,14 +28,15 @@ int main()
 		}
 		// create server
 		server server(io_services);
-		sleep(1);
+		sleep( 1 );
 		// wait until all thread will finished
+		std::cout << "Waiting for incoming connections \n";
 		thr_grp.join_all();
-       		std::cout << "Waiting for incoming connections \n";
-        	while( true )
-        	{
-        		usleep( 50000 );
-        	}
+        while( true )
+        {
+            std::cout << "Wrong start, please, restart the server \n";
+            usleep( 50000 );
+        }
 	}
 	catch( std::exception& e )
 	{
