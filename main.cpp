@@ -1,5 +1,6 @@
 #include <iostream>
 #include "socket.h"
+#include <unistd.h>
 
 using namespace std;
 
@@ -12,7 +13,7 @@ int main()
 	{
 		int thread_num=10;
 		// read number of threads with io_services from command line, if provided
-        thread_num=boost::lexical_cast<int>(10);
+        thread_num=boost::lexical_cast<int>(1);
 		ios_deque io_services;
 
 		boost::thread_group thr_grp;
@@ -26,13 +27,14 @@ int main()
 		}
 		// create server
 		server server(io_services);
+		sleep(1);
 		// wait until all thread will finished
 		thr_grp.join_all();
-        std::cout << "Waiting for incoming connections \n";
-        while( true )
-        {
-  //        Sleep( 400 );
-        }
+       		std::cout << "Waiting for incoming connections \n";
+        	while( true )
+        	{
+        		usleep( 50000 );
+        	}
 	}
 	catch( std::exception& e )
 	{

@@ -1,4 +1,5 @@
-/**
+
+ /**
  * @file   test-mcmt.cpp
  * @author Alex Ott <alexott@gmail.com>
  *
@@ -25,14 +26,11 @@ ba::ip::tcp::socket& connection :: socket()
 void connection :: start()
 {
     // start reading of headers from browser
-    boost::asio::async_read_until(socket_, buf, boost::regex("\r\n\r\n"),
+    boost::asio::async_read_until(socket_, buf, boost::regex("\\W*(<end>)\\W*"),
         boost::bind(&connection::handle_read, shared_from_this(),
                 ba::placeholders::error,
                 ba::placeholders::bytes_transferred));
-    std::istream is(&buf);
-    std::string line;
-    std::getline(is, line);
-    std::cout << "connection start: " << line << std::endl;
+    std::cout << "connection start: " << std::endl;
 }
 
 
@@ -56,9 +54,14 @@ void connection :: handle_read(const boost::system::error_code& error, size_t by
                 boost::bind(&connection::handle_write, shared_from_this(),
                             ba::placeholders::error,
                             ba::placeholders::bytes_transferred));
+    std::istream is(&buf);
+    std::string line;
+    std::getline(is, line);
+    std::cout << "handle read: " << line << std::endl;
+
 }
 
-server :: server(const ios_deque& io_services, int port=49669) : io_services_(io_services), acceptor_(*io_services.front(), ba::ip::tcp::endpoint(ba::ip::address::from_string("192.168.0.105"), 4000))
+server :: server(const ios_deque& io_services, int port=49669) : io_services_(io_services), acceptor_(*io_services.front(), ba::ip::tcp::endpoint(ba::ip::address::from_string("192.168.0.106"), 4000))
 {
     std::cerr << "server object has been created" << std::endl;
     /*boost::system::error_code ec;

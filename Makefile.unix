@@ -15,7 +15,7 @@ INC = -Ihead -Ivendor/boost_1_67_0
 CFLAGS = -Wall -std=c++14 -fexceptions -fpermissive
 RESINC = 
 LIBDIR = -Lvendor/boost_1_67_0/libs
-LIB = -lwsock32 -lboost_system -lboost_thread -lboost_regex -lbws2_32
+LIB = -lboost_system -lboost_thread -lboost_regex
 LDFLAGS = 
 
 INC_DEBUG = $(INC)
@@ -40,9 +40,9 @@ OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
 OUT_RELEASE = bin/Release/CarHelpserver
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/main.o $(OBJDIR_DEBUG)/src/client.o $(OBJDIR_DEBUG)/src/core/net/socket.o $(OBJDIR_DEBUG)/src/network.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/main.o $(OBJDIR_DEBUG)/src/core/net/socket.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/src/client.o $(OBJDIR_RELEASE)/src/core/net/socket.o $(OBJDIR_RELEASE)/src/network.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/src/core/net/socket.o
 
 all: debug release
 
@@ -64,14 +64,8 @@ out_debug: before_debug $(OBJ_DEBUG) $(DEP_DEBUG)
 $(OBJDIR_DEBUG)/main.o: main.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c main.cpp -o $(OBJDIR_DEBUG)/main.o
 
-$(OBJDIR_DEBUG)/src/client.o: src/client.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/client.cpp -o $(OBJDIR_DEBUG)/src/client.o
-
 $(OBJDIR_DEBUG)/src/core/net/socket.o: src/core/net/socket.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/core/net/socket.cpp -o $(OBJDIR_DEBUG)/src/core/net/socket.o
-
-$(OBJDIR_DEBUG)/src/network.o: src/network.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/network.cpp -o $(OBJDIR_DEBUG)/src/network.o
 
 clean_debug: 
 	rm -f $(OBJ_DEBUG) $(OUT_DEBUG)
