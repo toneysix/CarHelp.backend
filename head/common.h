@@ -14,11 +14,15 @@
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
 #include <iostream>
 #include <string>
 
 namespace ba=boost::asio;
 namespace bs=boost::system;
+namespace pt=boost::property_tree;
 
 typedef boost::shared_ptr<ba::ip::tcp::socket> socket_ptr;
 typedef boost::shared_ptr<ba::io_service> io_service_ptr;

@@ -45,19 +45,37 @@ void connection :: handle_write(const boost::system::error_code& error, size_t b
     std::cerr << "handle_write" << std::endl;
 }
 
-
+#include <codecvt>
 void connection :: handle_read(const boost::system::error_code& error, size_t bytes_transferred)
 {
-    std::string messag = "32";
-    std::cerr << "handle_read" << std::endl;
-    ba::async_write(socket_, ba::buffer(messag),
+    std::stringstream ss;
+
+    pt :: ptree root;
+    root.put( "type", "HELPER_LOCATION" );
+    root.put( "lat", "54.736071" );
+    root.put( "lon", "55.992301" );
+    // Add the new node to the root
+    // root.add_child( "header", root );
+    pt :: write_json( ss, root );
+
+
+    std::cerr << "handle WRITE (json):" << ss.str() << std::endl;
+
+
+	std::string str = ss.str();
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	std::wstring wstr = converter.from_bytes(str);
+	std::string utf8 = converter.to_bytes(wstr);
+
+
+    ba::async_write(socket_, ba::buffer(str),
                 boost::bind(&connection::handle_write, shared_from_this(),
                             ba::placeholders::error,
                             ba::placeholders::bytes_transferred));
     std::istream is(&buf);
     std::string line;
-    std::getline(is, line);
-    std::cout << "handle read: " << line << std::endl;
+    while( std::getline(is, line) )
+   	 std::cout << "handle read: " << line << std::endl;
 
 }
 
