@@ -12,6 +12,7 @@
 
 #include "socket.h"
 
+std::vector<connection*> connection :: Connection; 
 
 static connection :: pointer connection :: create(ba::io_service& io_service)
 {
@@ -36,7 +37,15 @@ void connection :: start()
 
 connection :: connection(ba::io_service& io_service) : socket_(io_service)
 {
+    Connection.push_back( this );
     std::cout  << "connection created" << std::endl;
+}
+
+
+connection :: ~connection()
+{
+    Connection.erase(std::remove(Connection.begin(), Connection.end(), this), Connection.end());
+    std::cout  << "connection destroyed" << std::endl;
 }
 
 
@@ -48,35 +57,65 @@ void connection :: handle_write(const boost::system::error_code& error, size_t b
 #include <codecvt>
 void connection :: handle_read(const boost::system::error_code& error, size_t bytes_transferred)
 {
-    std::stringstream ss;
+    if( ( ba :: error :: eof == error ) || ( ba :: error :: connection_reset == error ) )
+    {
+        std::cerr << "GOOD BYE MY BOY" << std::endl;
+        return;
+    }
 
+    std::istream is(&buf);
+    std::string line;
+    std::string packet = "";
+    for (std::string line; std::getline(is, line); )
+    {
+	std::cout << std::endl;
+        std::cout << line << std::endl;
+	packet += line;
+  
+    }
+    processPacket(packet);
+    this->start();
+
+}
+
+void connection ::  processPacket( std::string packet )
+{
+    std::vector<std::string> packets;
+    std::string delim = "<end>";
+    boost::algorithm::split_regex( packets, packet, boost:: regex( "<end>" ) );
+
+    std::stringstream sss;
+    sss << packets[0].c_str();
+    std::cout << packets[ 0 ] << std::endl;
+    pt :: ptree readedRoot;
+    pt::read_json(sss, readedRoot);
+    std::string lat = readedRoot.get<std::string>("lat"); 
+    std::string lon = readedRoot.get<std::string>("lon");
+
+    std::stringstream ss;
     pt :: ptree root;
     root.put( "type", "HELPER_LOCATION" );
-    root.put( "lat", "54.736071" );
-    root.put( "lon", "55.992301" );
+    root.put( "lat", lat );
+    root.put( "lon", lon );
     // Add the new node to the root
     // root.add_child( "header", root );
     pt :: write_json( ss, root );
+    ss << "<end>";
 
 
     std::cerr << "handle WRITE (json):" << ss.str() << std::endl;
 
-
-	std::string str = ss.str();
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	std::wstring wstr = converter.from_bytes(str);
-	std::string utf8 = converter.to_bytes(wstr);
-
-
-    ba::async_write(socket_, ba::buffer(str),
-                boost::bind(&connection::handle_write, shared_from_this(),
+    for (auto &conn : Connection) // access by reference to avoid copying
+    {  
+        if (conn != this)
+        {
+   		 ba::async_write(socket_, ba::buffer(ss.str()),
+                	boost::bind(&connection::handle_write, shared_from_this(),
                             ba::placeholders::error,
                             ba::placeholders::bytes_transferred));
-    std::istream is(&buf);
-    std::string line;
-    while( std::getline(is, line) )
-   	 std::cout << "handle read: " << line << std::endl;
 
+        }
+    }    
 }
 
 server :: server(const ios_deque& io_services, int port=49669) : io_services_(io_services), acceptor_(*io_services.front(), ba::ip::tcp::endpoint(ba::ip::address::from_string("192.168.0.106"), 4000))

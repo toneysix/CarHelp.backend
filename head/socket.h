@@ -1,6 +1,7 @@
 #define BOOST_ASIO_DISABLE_KQUEUE 1
 #include "common.h"
 #include <deque>
+#include <boost/algorithm/string/regex.hpp>
 
 typedef std::deque<io_service_ptr> ios_deque;
 
@@ -12,6 +13,8 @@ class connection : public boost::enable_shared_from_this<connection>
 {
 public:
 	typedef boost::shared_ptr<connection> pointer;
+	static std::vector<connection*> Connection;
+
 
 	/**
 	 * Create new connection
@@ -29,12 +32,14 @@ public:
 	 * @return reference to socket
 	 */
 	ba::ip::tcp::socket& socket();
+        void processPacket(std::string packet);
 
 	/**
 	 * Start input/output chain with reading of headers from browser
 	 *
 	 */
 	void start();
+	~connection();
 
 private:
 	/**
@@ -52,7 +57,6 @@ private:
 	 * @param bytes_transferred number of transferred bytes
 	 */
 	void handle_write(const boost::system::error_code& error,size_t bytes_transferred);
-
 	/**
 	 * Called when data readed from browser
 	 *
@@ -100,4 +104,5 @@ private:
 
 	ios_deque io_services_;		     /**< deque of pointers to io_services */
 	ba::ip::tcp::acceptor acceptor_; /**< object, that accepts new connections */
+	std::vector<connection*> connections;
 };
